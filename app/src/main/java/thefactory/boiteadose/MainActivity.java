@@ -1,37 +1,23 @@
-package thefactory.boiteabruit;
+package thefactory.boiteadose;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.SoundPool;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
-import java.util.LinkedList;
-import java.util.List;
-
-import thefactory.boiteabruit.R;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String pathFiles = Environment.getExternalStorageDirectory().getAbsolutePath() + "/BoiteABruit/";
     private MusicManager musicManager;
-    private TextView tv;
-    private File folder;
-    private MediaPlayer sound;
+    private TextView tv_musicName;
+    private File app_folder;
+    private MediaPlayer soundManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,34 +30,43 @@ public class MainActivity extends AppCompatActivity {
         Utils.requestPermissionsIfNot(this, this, permissions);
 
         //Récupération du dossier de l'application - création si il ne l'a pas encore été
-        folder = new File(pathFiles);
-        if (!folder.exists()) {
-            folder.mkdir();
+        app_folder = new File(Utils.pathFiles);
+        if (!app_folder.exists()) {
+            app_folder.mkdir();
+        }
+        //Parce que si la dose n'est pas là, on crée le fichier
+        if (!new File(Utils.pathFiles + "Dosé.wav").exists())
+        {
+            try {
+                Utils.moveFileFromRaw(this, R.raw.dose, Utils.pathFiles, "Dosé.wav");
+            } catch (IOException e) {
+                Toast.makeText(this, "La dose n'arrive pas à être présente.", Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
         }
 
-        musicManager = new MusicManager(folder);
-        sound = null;
+        musicManager = new MusicManager(app_folder);
+        soundManager = null;
 
-        tv = (TextView)findViewById(R.id.tv_name_file);
+        tv_musicName = (TextView)findViewById(R.id.tv_name_file);
 
-        tv.setText(musicManager.getCurMusicName());
-        //musicManager.getAllMusicFile(this);
+        tv_musicName.setText(musicManager.getCurMusicName());
 
         findViewById(R.id.b_make_sound).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 File file = musicManager.getCurMusic();
                 if (file.exists()) {
-                    if (sound != null)
+                    if (soundManager != null)
                     {
-                        sound.stop();
-                        sound.release();
+                        soundManager.stop();
+                        soundManager.release();
                     }
-                    sound = MediaPlayer.create(v.getContext(), Uri.parse(file.getAbsolutePath()));
-                    sound.start();
+                    soundManager = MediaPlayer.create(v.getContext(), Uri.parse(file.getAbsolutePath()));
+                    soundManager.start();
                 } else {
-                    Toast.makeText(v.getContext(), "Aucun fichier audio \"" + musicManager.getCurMusic() + "\" trouvé !", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(v.getContext(), "Aucun fichier audio " + musicManager.getCurMusic() + " trouvé !", Toast.LENGTH_SHORT).show();
+                    musicManager.refresh();
                 }
             }
         });
@@ -80,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 musicManager.next();
-                tv.setText(musicManager.getCurMusicName());
+                tv_musicName.setText(musicManager.getCurMusicName());
             }
         });
 
@@ -88,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 musicManager.previous();
-                tv.setText(musicManager.getCurMusicName());
+                tv_musicName.setText(musicManager.getCurMusicName());
             }
         });
 

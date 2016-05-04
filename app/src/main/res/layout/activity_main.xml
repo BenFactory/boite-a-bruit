@@ -55,6 +55,6 @@
         android:singleLine="false"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:textSize="@dimen/abc_text_size_large_material" />
+        android:textSize="@dimen/abc_text_size_large_material"/>
 
 </RelativeLayout>
