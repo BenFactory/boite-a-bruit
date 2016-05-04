@@ -1,4 +1,4 @@
-package thefactory.boiteabruit;
+package thefactory.boiteadose;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
