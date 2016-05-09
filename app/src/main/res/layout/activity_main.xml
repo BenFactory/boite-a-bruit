@@ -57,4 +57,13 @@
         android:layout_centerHorizontal="true"
         android:textSize="@dimen/abc_text_size_large_material"/>
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:layout_marginTop="65dp"
+        android:src="@drawable/icon_xhdpi"
+        android:layout_below="@+id/b_make_sound"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
